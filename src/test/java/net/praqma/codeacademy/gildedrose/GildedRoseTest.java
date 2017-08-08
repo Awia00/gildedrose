@@ -1,12 +1,11 @@
+package net.praqma.codeacademy.gildedrose;
+
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-package net.praqma.codeacademy.gildedrose;
-
 public class GildedRoseTest {
 
-    
     private GildedRose run_with(String name, int sell_in, int quality) {
         Item[] items = new Item[] { new Item(name, sell_in, quality) };
         GildedRose app = new GildedRose(items);

@@ -1,5 +1,5 @@
 
-class GildedRose {
+public class GildedRose {
     Item[] items;
 
     public GildedRose(Item[] items) {

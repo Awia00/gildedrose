@@ -1,12 +1,9 @@
-# Setup
+# Welcome
+This readme have three different parts:
+* [The assignemt](#coding-assignment) : if you do not know guilded rose, then read this before starting the programming exercise. If you know it, just skip this.
+* [The setup](#setup) : Installs the tools on you Linux server that you need in order to run the assignment.
+* [The exercises](#exercises) : The Jenkins excercises. When you have done the setup, then start here.
 
-Before this task, we expect you to have been through the basic Jenkins material and have the infrastructure set up from that. 
-
-In order for this to work, you need to install both maven and JDK on your agent.
-Log into the agen, and type the following:
-```
-sudo apt install maven openjdk-8-jdk
-```
 
 # Coding Assignment
 
@@ -51,6 +48,16 @@ for you).
 
 Just for clarification, an item can never have its Quality increase above 50, however "Sulfuras" is a
 legendary item and as such its Quality is 80 and it never alters.
+
+# Setup
+
+Before this task, we expect you to have been through the basic Jenkins material and have the infrastructure set up from that. 
+
+In order for this to work, you need to install both maven and JDK on your agent.
+Log into the agen, and type the following:
+```
+sudo apt install maven openjdk-8-jdk
+```
 
 # Exercises:
 
@@ -108,7 +115,7 @@ As a team, you do not want to go in and manually build the project every time yo
 
 * Go into `Configuration` again and select the `Poll SCM` checkbox
 * Type in `* * * * */1` to tell Jenkins to check for new commits every minute.
-* Make a new commit, uncommenting the test in src/test/java/net/praqma/codeacademy/gildedrose/GildedRoseTest.java
+* Make a new commit, commenting the test in src/test/java/net/praqma/codeacademy/gildedrose/GildedRoseTest.java
 * Push that change to GitHub, and monitor as Jenkins starts a build automatically.
 * Note that the build fails (because the test is failing) _this is OK_.
 

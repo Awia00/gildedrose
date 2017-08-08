@@ -1,4 +1,3 @@
-package net.praqma.codeacademy.gildedrose;
 
 class GildedRose {
     Item[] items;
@@ -9,27 +8,28 @@ class GildedRose {
 
     public void updateQuality() {
         for (int i = 0; i < items.length; i++) {
+            int deltaQ = 0;
             if (!items[i].name.equals("Aged Brie")
                     && !items[i].name.contains("Backstage passes")) {
                 if (items[i].quality > 0) {
                     if (!items[i].name.equals("Sulfuras")) {
-                        items[i].quality = items[i].quality - 1;
+                        deltaQ--;
                     }
                 }
             } else {
                 if (items[i].quality < 50) {
-                    items[i].quality = items[i].quality + 1;
-
+                    deltaQ++;
+            
                     if (items[i].name.contains("Backstage passes")) {
                         if (items[i].sellIn < 11) {
                             if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
+                                deltaQ++;
                             }
                         }
-
+            
                         if (items[i].sellIn < 6) {
                             if (items[i].quality < 50) {
-                                items[i].quality = items[i].quality + 1;
+                                deltaQ++;
                             }
                         }
                     }
@@ -45,18 +45,21 @@ class GildedRose {
                     if (!items[i].name.contains("Backstage passes")) {
                         if (items[i].quality > 0) {
                             if (!items[i].name.equals("Sulfuras")) {
-                                items[i].quality = items[i].quality - 1;
+                                deltaQ--;
                             }
                         }
                     } else {
-                        items[i].quality = items[i].quality - items[i].quality;
+                        deltaQ = -items[i].quality;
                     }
                 } else {
                     if (items[i].quality < 50) {
-                        items[i].quality = items[i].quality + 1;
+                        deltaQ++;
                     }
                 }
             }
+            if(items[i].name.startsWith("Conjured") && deltaQ < 0)
+                deltaQ *= 2;
+            items[i].quality = items[i].quality + deltaQ;
         }
     }
 }

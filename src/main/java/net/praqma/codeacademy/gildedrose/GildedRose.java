@@ -1,3 +1,4 @@
+package net.praqma.codeacademy.gildedrose;
 
 public class GildedRose {
     Item[] items;

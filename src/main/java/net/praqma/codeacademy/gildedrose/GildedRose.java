@@ -1,5 +1,8 @@
 package net.praqma.codeacademy.gildedrose;
 
+/***
+ * The gilded rose class
+ */
 public class GildedRose {
     Item[] items;
 

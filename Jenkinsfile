@@ -3,28 +3,35 @@ def builders = [
 		node {
             unstash 'repository'
             sh 'mvn clean package'
-            stash 'jar'
+            stash includes: 'target/**', name: 'jar'
         }
 	},
 	"javadoc": {
 	    node {
             unstash 'repository'
             sh 'mvn site'
-            stash 'jar'
+            stash includes: 'target/site/**', name: 'doc'
         }
 	}
 ]
-stage('Preparation'){
-    git credentialsId: 'Awia00', url: 'https://github.com/Awia00/gildedrose'
-    stash 'repository'
+
+node {
+    stage('Preparation'){
+        git credentialsId: 'Awia00', url: 'https://github.com/Awia00/gildedrose'
+        stash includes: '**', name: 'repository'
+    }
 }
+
 stage('parallel'){
-	parallel builders
+    parallel builders
 }
-stage('Results'){
-    unstash 'jar'
-    unstash 'doc'
-    junit '**/target/surefire-reports/TEST-*.xml'
-    archiveArtifacts 'target/gildedrose-*.jar'
-    archiveArtifacts 'target/site/**'
+
+node {
+    stage('Results'){
+        unstash 'jar'
+        unstash 'doc'
+        junit '**/target/surefire-reports/TEST-*.xml'
+        archiveArtifacts 'target/gildedrose-*.jar'
+        archiveArtifacts 'target/site/**'
+    }
 }

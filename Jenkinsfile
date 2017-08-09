@@ -11,6 +11,6 @@ node {
     }
     stage('Documentation'){
         sh 'mvn site'
-        archiveArtifacts 'target/javadoc/**'
+        archiveArtifacts 'target/site'
     }
 }

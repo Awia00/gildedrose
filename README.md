@@ -53,11 +53,10 @@ legendary item and as such its Quality is 80 and it never alters.
 
 Before this task, we expect you to have been through the basic Jenkins material and have the infrastructure set up from that. 
 
-In order for this to work, you need to install both maven and JDK on your agent.
-Log into the agen, and type the following:
-```
-sudo apt install maven openjdk-8-jdk
-```
+We also at this point need to make sure that jenkins is a member of the docker group so it can execute docker commands
+
+    sudo usermod -aG docker jenkins
+    sudo systemctl restart jenkins
 
 # Exercises:
 
@@ -65,10 +64,10 @@ sudo apt install maven openjdk-8-jdk
 * Generate a new SSH key that will be used by Jenkins to prove itself to GitHub, by following the first part of [Generating a new SSH key](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 * Add the public-key to your GitHub account by following [Adding a new SSH key to your GitHub account](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/)
 * Add the private-key to Jenkins, by opening your Jenkins server, and clicking `Credentials`
-  * Click `(global)` and `Add credentials`
-      * Choose Kind "SSH Username with private key", write the details used to generate the keypair and paste the contents from the private-key you generated in the first step, (default ~/.ssh/id_rsa)
+* Click `(global)` and `Add credentials`
+* Choose Kind "SSH Username with private key", write the details used to generate the keypair and paste the contents from the private-key you generated in the first step, (default ~/.ssh/id_rsa)
       write the passphrase you chose.
-      * Save it.
+* Save it.
 
 ### 0.5 Fork the repository
 * Fork of the [Gilded Rose repository](https://github.com/praqma-training/gildedrose) to obtain your own version of the code.
@@ -105,7 +104,7 @@ Finished: SUCCESS
 ### 2. Running a maven test
 
 * Click on the `Back to Project` button, and go in and `Configure` the job again.
-* Under the `Build` section, add an `Invoke top-level Maven targets` step and write `test` in it. That will trigger the maven test goal on the project, compiling the java code and running the unit tests.
+* Under the `Build` section, add an `Execute Shell` step and write `docker run -i --rm --name my-maven-project -v "$PWD":/usr/src/mymaven -w /usr/src/mymaven maven:3-jdk-8 mvn test` in it. That will trigger the maven test goal on the project, compiling the java code and running the unit tests.
 * Click save, and build now once more.
 * Go into the console output like last time, and see that maven now actually runs your tests.
 
@@ -175,13 +174,38 @@ Make three stages that does the following:
 
 Run this to see that it's working. The archiving part can be verified by looking for a small blue arrow next to the build number in the overview. Make sure you get your Jar file with you there.
 
-### 7. Parallel and stashing
+### 7. Archiving
 We also need to get the javadoc generated for the project.
 
 Fortunately that can be done with a small `mvn site` command.
 
 * Create another step called `Javadoc` where you execute the above command, and archive the result in the `target/javadoc` folder.
+* Archive the `target/gildedrose-*.jar` as well
 
+### 8. Dockerize this
+Now we have a fully functional pipeline, but it's not very nice to run `mvn` commands directly on the Jenkins machine. These commands can be run inside a docker container and produce the exact same result. Then we won't need to worry about installing and managing Maven versions on our virtual machine.
+
+* Convert your `mvn` steps to run inside docker containers
+
+Hints
+* Use the `maven:3-jdk-8` docker image
+* Use `-i` instead of `-d`. We want to be in interactive mode, and wait for the command to execute.
+* `$PWD` will give you the path to the current directory. If you mount the current directory into the container and execute the command in that volume, it will be the same as running the command locally on the machine. To achieve this, add the following to your `docker run` command: `-v $PWD:/usr/src/mymaven -w /usr/src/mymaven`
+* Add `--rm` to your `docker run` command to make it delete itself when done executing. This is how you avoid old stopped containers filling up on the machine.
+
+### 9. Multibranch pipeline
+There is a file in this repository called Jenkinsfile
+
+Right now it only has a dumb `hello world`
+
+* Take your pipeline script, and replace the files content with it.
+* Replace the git command with `checkout scm`. Multibranch knows where it gets triggered from.
+* Push that back to the repository
+* Create a new job of the `multibranch pipeline` type, and configure that to take from your repository.
+* Trigger it to see that it works.
+* Make a new branch locally, and push it up to GitHub to see that it automatically makes a new pipeline for you as well.
+
+### Xtra. Parallel and stashing
 Now we have two processes that actually can be run in parallel. The `build` and `javadoc` steps both take in the sourcecode and produces artifacts. So lets try to run them in parallel.
 
 > This assignment is loosely formulated, so you need to [look things up yourself](https://jenkins.io/doc/pipeline/steps/) in order to complete this one
@@ -207,18 +231,6 @@ stage('parallel'){
 * Stash the results instead of archiving. Call them `jar` and `javadoc`
 * Unstash them in the `Results` step in the end where you archive them.
 
-
-### Multibranch pipeline
-There is a file in this repository called Jenkinsfile
-
-Right now it only has a dumb `hello world`
-
-* Take your pipeline script, and replace the files content with it.
-* Replace the git command with `checkout scm`. Multibranch knows where it gets triggered from.
-* Push that back to the repository
-* Create a new job of the `multibranch pipeline` type, and configure that to take from your repository.
-* Trigger it to see that it works.
-* Make a new branch locally, and push it up to GitHub to see that it automatically makes a new pipeline for you as well.
-
+#DONE!
 **That's it!** You rock at this!
 If you have more time, and want to make a real pipeline with pretested integration, then read our story about [pipeline vs old fashioned jobs](http://www.praqma.com/stories/jenkins-pipeline/) and try to incorporate the script into your own pipeline!

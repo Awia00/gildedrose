@@ -106,16 +106,18 @@ git submodule update --init --recursive
 		}
 		// Integrate
 		stage("Push") {
-			sshagent (credentials: ["${SSH_AGENT_ID}"]) {
-				timeout(1) {
-					sh """
-					git push origin ${TARGET_BRANCH_NAME}
-					git fetch
-					if [ "\$(git rev-parse origin/${BRANCH_NAME})" = "${inputSHA}" ]
-					then
-					git push origin :${BRANCH_NAME}
-					fi
-					"""
+			if(shouldMerge()) {
+				sshagent (credentials: ["${SSH_AGENT_ID}"]) {
+					timeout(1) {
+						sh """
+						git push origin ${TARGET_BRANCH_NAME}
+						git fetch
+						if [ "\$(git rev-parse origin/${BRANCH_NAME})" = "${inputSHA}" ]
+						then
+						git push origin :${BRANCH_NAME}
+						fi
+						"""
+					}
 				}
 			}
 			deleteDir() // not really neccesary.

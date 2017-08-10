@@ -50,7 +50,7 @@ lock("pip") {
 
 	node{
     	stage("Checkout") {
-			deleteDir()
+			deleteDir() // neccesary because lockable resources plugin. persists stuff between builds
     		buildNumber = currentBuild.number;
       		//buildNumber = sh(script: "curl -sd '${TARGET_BRANCH_NAME}' ${MY_SQNZ_URL}", returnStdout: true).trim()
       		currentBuild.displayName = "${currentBuild.displayName} (${buildNumber})"

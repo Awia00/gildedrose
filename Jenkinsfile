@@ -87,13 +87,15 @@ git submodule update --init --recursive
 				sha = sh(script: "git rev-parse HEAD", returnStdout: true).trim()
 				shaish = sh(script: "git rev-parse --short=5 HEAD", returnStdout: true).trim()
 			}
+			stash includes: '**', name: 'repository'
 		}
 	}
 
 	// BUILD SHIT
-	stash includes: '**', name: 'repository'
+	
 	parallel builders
 
+	// Handle the build
 	node{
 		stage('Results'){
 			unstash 'jar'

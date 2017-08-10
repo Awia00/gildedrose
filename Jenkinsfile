@@ -43,7 +43,6 @@ def builders = [
 println "Parameters: branch: ${BRANCH_NAME}, target: ${TARGET_BRANCH_NAME}, merge: ${shouldMerge()}"
 
 lock("pip") {
-	deleteDir()
     // The following stages are locked to ensure that only one pipeline runs at
     // at a time. The stages in here must contain everything between and
     // including the original git checkout and the final git push of the merged
@@ -51,6 +50,7 @@ lock("pip") {
 
 	node{
     	stage("Checkout") {
+			deleteDir()
     		buildNumber = currentBuild.number;
       		//buildNumber = sh(script: "curl -sd '${TARGET_BRANCH_NAME}' ${MY_SQNZ_URL}", returnStdout: true).trim()
       		currentBuild.displayName = "${currentBuild.displayName} (${buildNumber})"
@@ -116,8 +116,9 @@ git submodule update --init --recursive
 					"""
 				}
 			}
+			deleteDir()
 		}
     }
-	deleteDir()
+	
 }
 

@@ -1,3 +1,10 @@
+node {
+    stage('Preparation'){
+        checkout scm
+        stash includes: '**', name: 'repository'
+    }
+}
+
 def builders = [
 	"build": {
 		node {
@@ -14,14 +21,6 @@ def builders = [
         }
 	}
 ]
-
-node {
-    stage('Preparation'){
-        git credentialsId: 'Awia00', url: 'https://github.com/Awia00/gildedrose'
-        stash includes: '**', name: 'repository'
-    }
-}
-
 stage('parallel'){
     parallel builders
 }

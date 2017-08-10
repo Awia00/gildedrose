@@ -118,9 +118,8 @@ git submodule update --init --recursive
 					"""
 				}
 			}
-			deleteDir()
+			deleteDir() // not really neccesary.
 		}
     }
 	
 }
-
